@@ -1685,26 +1685,9 @@ view.ModelFactoryService = class {
             return this._openContext(modelContext).then((model) => {
                 if (model) {
                     console.log('view: open - model:', model, typeof model, modelContext)
-
-                    // var blob1 = new Blob([model], {type: "application/octet-stream"});
-                    // console.log(blob1)
-
                     console.log(model._graphs)
-                    
                     console.log(model._graphs[0]._nodes[0])
                     console.log(typeof model._graphs[0]._nodes[0])
-
-                    // JSON will fail as JSON doesn't preserve dates
-                    try {
-                        var serializemodel = JSON.stringify(model);
-                        console.log(serializemodel);
-                    } catch (err) {
-                        console.log(" JSON has failed to preserve Date during stringify/parse ");
-                        console.log("  and has generated the following error message", err.message);
-                    }
-
-                    // const clone = JSON.stringify(model._graphs)
-                   
 
                     // const clone = JSON.stringify(model.freeze())
                     // console.log(clone)
