@@ -29,6 +29,7 @@ class _ContentProvider: # pylint: disable=too-few-public-methods
             self.base = os.path.basename(path)
     def read(self, path):
         ''' Read content '''
+        print('_ContentProvider', path)
         if path == self.base and self.data:
             return self.data
         base_dir = os.path.realpath(self.dir)
@@ -285,7 +286,7 @@ def serve(file, data, address=None, browse=False, verbosity=1):
         stop(address)
     else:
         address = _make_port(address)
-
+    
     thread = _HTTPServerThread(content, address, verbosity)
     thread.start()
     while not thread.alive():

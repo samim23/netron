@@ -424,6 +424,7 @@ view.View = class {
     }
 
     open(context) {
+        console.log('view - open')
         this._host.event('Model', 'Open', 'Size', context.stream ? context.stream.length : 0);
         this._sidebar.close();
         return this._timeout(2).then(() => {
@@ -447,6 +448,7 @@ view.View = class {
     }
 
     _updateActiveGraph(graph) {
+        console.log('view - _updateActiveGraph', graph)
         this._sidebar.close();
         if (this._model) {
             const model = this._model;
@@ -466,6 +468,7 @@ view.View = class {
     }
 
     _updateGraph(model, graphs) {
+        console.log('view - _updateGraph')
         return this._timeout(100).then(() => {
             const graph = Array.isArray(graphs) && graphs.length > 0 ? graphs[0] : null;
             if (graph && graph != this._graphs[0]) {
@@ -532,6 +535,7 @@ view.View = class {
     }
 
     renderGraph(model, graph) {
+        console.log('view - renderGraph: ', model, graph)
         try {
             this._graph = null;
 
@@ -760,6 +764,7 @@ view.View = class {
     }
 
     showNodeProperties(node, input) {
+        console.log('view - showNodeProperties', node, input)
         if (node) {
             try {
                 const nodeSidebar = new sidebar.NodeSidebar(this._host, node);
@@ -1528,6 +1533,26 @@ view.ModelContext = class {
     }
 };
 
+
+// Example POST method implementation:
+async function postData(url = '', data = {}) {
+    // Default options are marked with *
+    const response = await fetch(url, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors', // no-cors, *cors, same-origin
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
+      headers: {
+        // 'Content-Type': 'application/json'
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      redirect: 'follow', // manual, *follow, error
+      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify(data) // body data type must match "Content-Type" header
+    });
+    return response.json(); // parses JSON response into native JavaScript objects
+  }
+
 view.EntryContext = class {
 
     constructor(host, entries, rootFolder, identifier, stream) {
@@ -1659,12 +1684,39 @@ view.ModelFactoryService = class {
             /* eslint-disable consistent-return */
             return this._openContext(modelContext).then((model) => {
                 if (model) {
+                    console.log('view: open - model:', model, typeof model, modelContext)
+
+                    // var blob1 = new Blob([model], {type: "application/octet-stream"});
+                    // console.log(blob1)
+
+                    console.log(model._graphs)
+                    
+                    console.log(model._graphs[0]._nodes[0])
+                    console.log(typeof model._graphs[0]._nodes[0])
+
+                    // JSON will fail as JSON doesn't preserve dates
+                    try {
+                        var serializemodel = JSON.stringify(model);
+                        console.log(serializemodel);
+                    } catch (err) {
+                        console.log(" JSON has failed to preserve Date during stringify/parse ");
+                        console.log("  and has generated the following error message", err.message);
+                    }
+
+                    // const clone = JSON.stringify(model._graphs)
+                   
+
+                    // const clone = JSON.stringify(model.freeze())
+                    // console.log(clone)
+                    // postData('http://localhost:8888/settings_save', { model: clone })
+                    
                     return model;
                 }
                 const entries = modelContext.entries();
                 if (entries && entries.size > 0) {
                     return this._openEntries(entries).then((context) => {
                         if (context) {
+                            console.log('view: open - _openContext:', context)
                             return this._openContext(context);
                         }
                         this._unsupported(modelContext);
@@ -1884,6 +1936,7 @@ view.ModelFactoryService = class {
         const modules = this._filter(context).filter((module) => module && module.length > 0);
         const errors = [];
         let success = false;
+        console.log('view _openContext', context, modules)
         const nextModule = () => {
             if (modules.length > 0) {
                 const id = modules.shift();
@@ -1938,6 +1991,7 @@ view.ModelFactoryService = class {
     }
 
     _openEntries(entries) {
+        console.log('_openEntries', entries)
         try {
             const rootFolder = (files) => {
                 const map = files.map((file) => file.split('/').slice(0, -1));
@@ -2084,6 +2138,7 @@ view.ModelFactoryService = class {
     }
 
     _openSignature(context) {
+        console.log('view _openSignature')
         const stream = context.stream;
         if (stream) {
             let empty = true;
@@ -2151,3 +2206,4 @@ if (typeof module !== 'undefined' && typeof module.exports === 'object') {
     module.exports.View = view.View;
     module.exports.ModelFactoryService = view.ModelFactoryService;
 }
+

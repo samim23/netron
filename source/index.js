@@ -222,7 +222,9 @@ host.BrowserHost = class {
         });
 
         this.document.getElementById('version').innerText = this.version;
-
+        
+        console.log('start')
+        
         if (this._meta.file) {
             const url = this._meta.file[0];
             if (this._view.accept(url)) {
@@ -506,9 +508,19 @@ host.BrowserHost = class {
         const progress = (value) => {
             this._view.progress(value);
         };
+        console.log('_openModel start: ', url)
         return this._request(url, null, null, progress).then((stream) => {
             const context = new host.BrowserHost.BrowserContext(this, url, identifier, stream);
             return this._view.open(context).then(() => {
+                console.log('_openModel return', identifier, this._view.model)
+                
+                // const x = this;
+                // setTimeout(function(){
+                //     x._view.model._format = "asshole"
+                //     console.log('hello')
+                //     x._view._reload()
+                // },1000)
+
                 return identifier || context.identifier;
             }).catch((err) => {
                 if (err) {
@@ -523,6 +535,7 @@ host.BrowserHost = class {
 
     _open(file, files) {
         this._view.show('welcome spinner');
+        console.log('open')
         const context = new host.BrowserHost.BrowserFileContext(this, file, files);
         context.open().then(() => {
             return this._view.open(context).then((model) => {
